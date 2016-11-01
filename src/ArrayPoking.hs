@@ -46,3 +46,21 @@ combineColors red green blue = G.create stVec
               writeSTRef ref  (i + 3)
 
          return mutvec
+
+downFourier :: forall a v. (G.Vector v a, Fractional a)
+            => v a -> Int -> v a
+downFourier vec dimN = G.create stVec
+  where
+    -- Convencion Libro
+    dimM = dimN `div` 2
+
+    stVec :: forall s. ST s (G.Mutable v s a)
+    stVec =
+      do mutvec <- GM.new dimM
+         F.forM_ [0..(dimM - 1)] $ \i ->
+           GM.write mutvec i (go vec i)
+         return mutvec
+
+    -- Teorema de downsampling y transformada de Fourier
+    go :: v a -> Int -> a
+    go z i = 0.5 * (z G.! i + z G.! (i + dimM))

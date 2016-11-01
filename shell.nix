@@ -4,8 +4,8 @@ let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, base, hmatrix, hspec, JuicyPixels, stdenv
-      , vector, vector-fftw
+  f = { mkDerivation, base, hmatrix, hspec, JuicyPixels, mtl
+      , stdenv, vector, vector-fftw
       }:
       mkDerivation {
         pname = "proyecto-lena";
@@ -14,7 +14,7 @@ let
         isLibrary = true;
         isExecutable = true;
         libraryHaskellDepends = [
-          base hmatrix JuicyPixels vector vector-fftw
+          base hmatrix JuicyPixels mtl vector vector-fftw
         ];
         executableHaskellDepends = [ base ];
         testHaskellDepends = [ base hspec JuicyPixels vector ];

@@ -15,6 +15,7 @@ realMain =
      let (red   :: V.Vector Word8) = extractColor 0 img
          (green :: V.Vector Word8) = extractColor 1 img
          (blue  :: V.Vector Word8) = extractColor 2 img
+     return ()
 
 lena_path, tiny_path :: FilePath
 lena_path = "/home/slack/UTFSM/2016-2/trabajo-roldan-peypo/proyecto-lena/images/Lenna.png"
