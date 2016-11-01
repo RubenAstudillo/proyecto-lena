@@ -19,6 +19,7 @@ cabal-version:       >=1.10
 
 library
   exposed-modules:     FFT,
+                       ArrayPoking,
                        RealMain
   -- other-modules:       
   -- other-extensions:    
@@ -37,9 +38,9 @@ test-suite test-lena
   main-is:             test-lena.hs
   build-depends:       base,
                        hspec,
+                       JuicyPixels,
                        vector,
                        proyecto-lena
-
 
 executable lena
   main-is:             Main.hs

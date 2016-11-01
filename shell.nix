@@ -17,7 +17,7 @@ let
           base hmatrix JuicyPixels vector vector-fftw
         ];
         executableHaskellDepends = [ base ];
-        testHaskellDepends = [ base hspec vector ];
+        testHaskellDepends = [ base hspec JuicyPixels vector ];
         description = "FFT en algunas imagenes";
         license = stdenv.lib.licenses.bsd3;
       };
