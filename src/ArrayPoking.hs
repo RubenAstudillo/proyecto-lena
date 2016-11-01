@@ -1,10 +1,7 @@
 {-# language ScopedTypeVariables #-}
+{-# language TypeFamilies #-}
 module ArrayPoking where
 
-import Data.Vector.Storable (Vector)
-import qualified Data.Vector.Storable as SV
-import Data.Vector.Mutable (MVector, STVector)
-import qualified Data.Vector.Storable.Mutable as MV
 import qualified Data.Vector.Generic as G
 import qualified Data.Vector.Generic.Mutable as GM
 import Data.Word
@@ -15,26 +12,28 @@ import Data.Foldable as F
 
 type Offset = Int
 
-extractColor :: Offset -> Image PixelRGB8 -> Vector Word8
-extractColor off (Image width height datum) = runST stVec
+extractColor :: forall a v. (G.Vector v a, a ~ Word8)
+             => Offset -> Image PixelRGB8 -> v a
+extractColor off (Image width height datum) = G.create stVec
   where
     -- Cada pixel esta hecho de tres colores, asi que la dimension de
     -- los vectores resultantes se mantiene al filtrar en uno
     dimPixels = width * height
 
-    stVec :: ST s (Vector Word8)
+    stVec :: forall s. ST s (G.Mutable v s Word8)
     stVec =
-      do mutvec <- MV.new dimPixels
+      do mutvec <- GM.new dimPixels
          let offInd = [0 + off, (3 + off)..(3 * dimPixels - 1)]
 
          F.forM_ (offInd `zip` [0,1..(dimPixels - 1)]) $
-             \(oi,i) -> MV.write mutvec i (datum SV.! oi)
+             \(oi,i) -> GM.write mutvec i (datum G.! oi)
 
-         SV.freeze mutvec
+         return mutvec
 
-combineColors :: (G.Vector v a) => v a -> v a -> v a -> v a
+combineColors :: forall a v. (G.Vector v a) => v a -> v a -> v a -> v a
 combineColors red green blue = G.create stVec
   where
+    stVec :: forall s. ST s (G.Mutable v s a)
     stVec =
       do mutvec <- GM.new (G.length red * 3)
          ref    <- newSTRef 0
