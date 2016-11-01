@@ -25,9 +25,21 @@ library
   build-depends:       base >=4.9 && <4.10,
                        hmatrix,
                        JuicyPixels,
-                       vector-fftw
+                       vector-fftw,
+                       vector
   hs-source-dirs:      src
   default-language:    Haskell2010
+
+test-suite test-lena
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  default-language:    Haskell2010
+  main-is:             test-lena.hs
+  build-depends:       base,
+                       hspec,
+                       vector,
+                       proyecto-lena
+
 
 executable lena
   main-is:             Main.hs
