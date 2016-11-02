@@ -22,17 +22,19 @@ realMain =
      let red   = V.map fromIntegral (extractColor 0 img)
          green = V.map fromIntegral (extractColor 1 img)
          blue  = V.map fromIntegral (extractColor 2 img)
-         go color = evalState
-                      (secAnalitica color >>= compresion (read rate)
-                         >>= secSintetica)
-                      (V.length color)
+
+         calidad = read rate
+         redNew   = waveletAlgo calidad red
+         greenNew = waveletAlgo calidad green
+         blueNew  = waveletAlgo calidad blue
 
      writePng "./lena_alt.png"
-              (nuevaImg width height (go red) (go green) (go blue))
+              (nuevaImg width height redNew greenNew blueNew)
 
-lena_path, tiny_path :: FilePath
+lena_path, tiny_path, hunter_path :: FilePath
 lena_path = "/home/slack/UTFSM/2016-2/trabajo-roldan-peypo/proyecto-lena/images/Lenna.png"
 tiny_path = "/home/slack/UTFSM/2016-2/trabajo-roldan-peypo/proyecto-lena/images/tiny.png"
+hunter_path = "/home/slack/UTFSM/2016-2/trabajo-roldan-peypo/proyecto-lena/images/hunter.png"
 
 loadImage :: FilePath -> IO (Image PixelRGB8)
 loadImage path =

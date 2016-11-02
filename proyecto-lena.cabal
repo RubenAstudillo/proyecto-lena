@@ -16,6 +16,7 @@ extra-source-files:  ChangeLog.md
                      images/Lenna.png
 data-files:          images/Lenna.png
                      images/tiny.png
+                     images/colorful.png
 cabal-version:       >=1.10
 
 library

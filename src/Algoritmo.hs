@@ -44,7 +44,16 @@ secSintetica (x1, y1) =
 compresion :: Double -> (L2, L2) -> State Dim (L2, L2)
 compresion rate (x1, y1) =
   do dim <- get
-     let cut = percentile (100 - rate) . cmap magnitude
-                 $ x1 VS.++ y1
+     let ix1 = ifft x1
+         iy1 = ifft y1
+         cut = percentile (100 - rate) . cmap magnitude
+                 $ ix1 VS.++ iy1
          go c = if magnitude c < cut then 0 else c
-     return $ (VS.map go x1, VS.map go y1)
+     return $ (fft (VS.map go ix1), fft (VS.map go iy1))
+
+waveletAlgo :: Double -> L2 -> L2
+waveletAlgo rate color = evalState go (VS.length color)
+  where
+    go :: State Dim L2
+    go = secAnalitica color >>= compresion rate
+         >>= secSintetica
