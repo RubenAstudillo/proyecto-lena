@@ -17,16 +17,17 @@ import Algoritmo
 
 realMain :: IO ()
 realMain =
-  do rate : _ <- getArgs
+  do rate : levels : _ <- getArgs
      img@(Image width height _) <- loadImage lena_path
      let red   = V.map fromIntegral (extractColor 0 img)
          green = V.map fromIntegral (extractColor 1 img)
          blue  = V.map fromIntegral (extractColor 2 img)
 
          calidad = read rate
-         redNew   = waveletAlgo calidad red
-         greenNew = waveletAlgo calidad green
-         blueNew  = waveletAlgo calidad blue
+         niveles = read levels
+         redNew   = waveletAlgo calidad niveles red
+         greenNew = waveletAlgo calidad niveles green
+         blueNew  = waveletAlgo calidad niveles blue
 
      writePng "./lena_alt.png"
               (nuevaImg width height redNew greenNew blueNew)

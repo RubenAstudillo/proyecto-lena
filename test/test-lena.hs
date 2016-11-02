@@ -9,6 +9,9 @@ import Codec.Picture
 import Data.Monoid
 import Control.Monad.State
 import Numeric.LinearAlgebra hiding ((<>))
+import Test.Hspec.QuickCheck
+import Test.QuickCheck.Property
+import Test.QuickCheck
 
 import FFT
 import ArrayPoking
@@ -43,8 +46,16 @@ main = hspec $ do
     it "Recombinando %error" $ do
       -- lena_img@(Image width height _) <- loadImage lena_path
       let alt = SV.fromList [4, 2, 3, 7, 10, 8, 10, 14]
-          res = evalState (secAnalitica alt >>= secSintetica) 8
+          res = evalState (secAnalitica 2 alt >> secSintetica) []
       norm_2 (res - alt) / norm_2 alt < 0.1 `shouldBe` True
+
+  -- prop "Recombinando %error" $
+  --     -- lena_img@(Image width height _) <- loadImage lena_path
+  --     let res alt = evalState (secAnalitica 4 alt >> secSintetica) []
+  --         -- alt = SV.fromList [4, 2, 3, 7, 10, 8, 10, 14, 40, 22, 90, 33, 11, 34, 38, 50]
+  --     in  (forAll (fmap SV.fromList arbitrary)
+  --         (\a -> norm_2 (res a - a) / norm_2 a < 0.01))
+
 
   -- describe "Pruebas en Lena"
   --   it "Recombinacion Lena" $ do

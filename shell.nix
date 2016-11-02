@@ -5,7 +5,8 @@ let
   inherit (nixpkgs) pkgs;
 
   f = { mkDerivation, base, hmatrix, hspec, hstatistics
-      , JuicyPixels, mtl, stdenv, vector, vector-fftw
+      , JuicyPixels, mtl, QuickCheck, stdenv, vector, vector-algorithms
+      , vector-fftw
       }:
       mkDerivation {
         pname = "proyecto-lena";
@@ -14,10 +15,13 @@ let
         isLibrary = true;
         isExecutable = true;
         libraryHaskellDepends = [
-          base hmatrix hstatistics JuicyPixels mtl vector vector-fftw
+          base hmatrix hstatistics JuicyPixels mtl vector vector-algorithms
+          vector-fftw
         ];
         executableHaskellDepends = [ base ];
-        testHaskellDepends = [ base hmatrix hspec JuicyPixels mtl vector ];
+        testHaskellDepends = [
+          base hmatrix hspec JuicyPixels mtl QuickCheck vector
+        ];
         description = "FFT en algunas imagenes";
         license = stdenv.lib.licenses.bsd3;
       };

@@ -9,6 +9,8 @@ import Control.Monad.ST
 import Data.STRef
 import Codec.Picture
 import Data.Foldable as F
+import Control.Category ((>>>))
+import qualified Data.Vector.Algorithms.Intro as Al
 
 type Offset = Int
 
@@ -78,19 +80,6 @@ downSamp vec dim_n = G.create stVec
            GM.write mutvec i (vec G.! (2 * i))
          return mutvec
 
-
--- upSampF :: forall a v. (G.Vector v a, Num a) => v a -> Int -> v a
--- upSampF vec dim_m = G.create stVec
---   where
---     dim_n = 2 * dim_m
-
---     stVec :: forall s. ST s (G.Mutable v s a)
---     stVec =
---       do mutvec <- GM.replicate dim_n 0
---          F.forM_ [0,2..(dim_n - 1)] $
---            \i -> GM.write mutvec i (vec G.! (i `div` 2))
---          return mutvec
-
 upSampF :: forall a v. (G.Vector v a, Num a) => v a -> Int -> v a
 upSampF vec dim_m = G.create stVec
   where
@@ -102,3 +91,12 @@ upSampF vec dim_m = G.create stVec
          F.forM_ [0,1..(dim_n - 1)] $
            \i -> GM.write mutvec i (vec G.! (mod i dim_m))
          return mutvec
+
+-- Sort in place
+sortIP :: forall a v. (G.Vector v a, Ord a) => v a -> v a
+sortIP vec = runST stVec
+  where
+    stVec :: forall s. ST s (v a)
+    stVec = do mutvec <- G.thaw vec
+               Al.sort mutvec
+               G.freeze mutvec

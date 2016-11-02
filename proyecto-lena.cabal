@@ -33,6 +33,7 @@ library
                        hmatrix,
                        hstatistics,
                        JuicyPixels,
+                       vector-algorithms,
                        vector-fftw,
                        vector
   hs-source-dirs:      src
@@ -45,6 +46,7 @@ test-suite test-lena
   main-is:             test-lena.hs
   build-depends:       base,
                        hspec,
+                       QuickCheck,
                        mtl,
                        hmatrix,
                        JuicyPixels,
