@@ -46,7 +46,7 @@ main = hspec $ do
     it "Recombinando %error" $ do
       -- lena_img@(Image width height _) <- loadImage lena_path
       let alt = SV.fromList [4, 2, 3, 7, 10, 8, 10, 14]
-          res = evalState (secAnalitica 2 alt >> secSintetica) []
+          res = evalState (secAnalitica 2 alt >> secSintetica 2) []
       norm_2 (res - alt) / norm_2 alt < 0.1 `shouldBe` True
 
   -- prop "Recombinando %error" $

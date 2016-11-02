@@ -17,25 +17,46 @@ import Algoritmo
 
 realMain :: IO ()
 realMain =
-  do rate : levels : _ <- getArgs
+  do rate : divisions : reconstruct : _ <- getArgs
      img@(Image width height _) <- loadImage lena_path
      let red   = V.map fromIntegral (extractColor 0 img)
          green = V.map fromIntegral (extractColor 1 img)
          blue  = V.map fromIntegral (extractColor 2 img)
 
-         calidad = read rate
-         niveles = read levels
-         redNew   = waveletAlgo calidad niveles red
-         greenNew = waveletAlgo calidad niveles green
-         blueNew  = waveletAlgo calidad niveles blue
+         calidad    = read rate
+         divisiones = read divisions
+         recons     = read reconstruct
+
+         redNew   = waveletAlgo calidad divisiones recons red
+         greenNew = waveletAlgo calidad divisiones recons green
+         blueNew  = waveletAlgo calidad divisiones recons blue
 
      writePng "./lena_alt.png"
               (nuevaImg width height redNew greenNew blueNew)
 
-lena_path, tiny_path, hunter_path :: FilePath
+realMain2 :: IO ()
+realMain2 =
+  do rate : divisions : reconstruct : _ <- getArgs
+     img@(Image width height _) <- loadImage lena_path
+     let red   = V.map fromIntegral (extractColor 0 img)
+         green = V.map fromIntegral (extractColor 1 img)
+         blue  = V.map fromIntegral (extractColor 2 img)
+
+         calidad    = read rate
+         divisiones = read divisions
+         recons     = read reconstruct
+
+         redNew   = waveletAlgo calidad divisiones recons red
+         greenNew = waveletAlgo calidad divisiones recons green
+         blueNew  = waveletAlgo calidad divisiones recons blue
+
+     writePng "./lena_alt.png"
+       (Image width height (V.map (round . realPart) redNew) :: Image Pixel8)
+
+lena_path, tiny_path, bebe_path :: FilePath
 lena_path = "/home/slack/UTFSM/2016-2/trabajo-roldan-peypo/proyecto-lena/images/Lenna.png"
 tiny_path = "/home/slack/UTFSM/2016-2/trabajo-roldan-peypo/proyecto-lena/images/tiny.png"
-hunter_path = "/home/slack/UTFSM/2016-2/trabajo-roldan-peypo/proyecto-lena/images/hunter.png"
+bebe_path = "/home/slack/UTFSM/2016-2/trabajo-roldan-peypo/proyecto-lena/images/bebe.png"
 
 loadImage :: FilePath -> IO (Image PixelRGB8)
 loadImage path =
@@ -43,6 +64,14 @@ loadImage path =
      img  <- either (\s -> putStrLn s >> exitFailure) return lena
      case img of
        ImageRGB8 img_lena -> return img_lena
+       _                  -> exitFailure
+
+loadImageBebe :: FilePath -> IO (Image Pixel8)
+loadImageBebe path =
+  do lena <- readImage path
+     img  <- either (\s -> putStrLn s >> exitFailure) return lena
+     case img of
+       ImageY8   img_bebe -> return img_bebe
        _                  -> exitFailure
 
 nuevaImg :: (Complex Double ~ a)

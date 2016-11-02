@@ -31,8 +31,8 @@ secAnalitica n zF =
        --
        else modify (x1 :) >> secAnalitica (n - 1) y1
 
-secSintetica :: State [L2] L2
-secSintetica =
+secSintetica :: Niveles -> State [L2] L2
+secSintetica n =
   do y2 : x2 : rest <- get
      let dim = VS.length y2
          dim_n = dim * 2
@@ -42,9 +42,9 @@ secSintetica =
                y2' * (fft (haarU dim_n))
      put (y1 : rest)
 
-     if null rest
-       then return (ifft y1)
-       else secSintetica
+     if null rest || n <= 1
+       then return y1
+       else secSintetica (n - 1)
 
 {-
   Idea: Mantener los @k terminos mayores y lo demas setearlos a 0. Es
@@ -57,17 +57,18 @@ compresion rate =
   do vec <- get
      let cut  = percentile (100 - rate) . sortIP
                 . cmap magnitude $ VS.concat vec
+
          go c = if magnitude c < cut then 0 else c
      put $ P.map (VS.map go) vec
 
-waveletAlgo :: Double -> Niveles -> L2 -> L2
-waveletAlgo calidad niveles color = evalState go []
+waveletAlgo :: Double -> Niveles -> Niveles -> L2 -> L2
+waveletAlgo calidad div recon color = evalState go []
   where
-    colorF = fft color
-
     go :: State [L2] L2
-    go = secAnalitica niveles colorF
+    go = return (fft color)
+         >>= secAnalitica div
          -- >> modify (P.map ifft)
          >> compresion calidad
          -- >> modify (P.map fft)
-         >> secSintetica
+         >> secSintetica recon
+         >>= return . ifft
