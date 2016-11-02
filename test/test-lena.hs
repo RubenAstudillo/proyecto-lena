@@ -7,10 +7,13 @@ import Data.Vector.Storable (Vector)
 import Data.Vector.Storable as SV
 import Codec.Picture
 import Data.Monoid
+import Control.Monad.State
+import Numeric.LinearAlgebra hiding ((<>))
 
 import FFT
 import ArrayPoking
 import RealMain
+import Algoritmo
 
 main :: IO ()
 main = hspec $ do
@@ -36,6 +39,22 @@ main = hspec $ do
           green = extractColor 1 lena_img
           blue  = extractColor 2 lena_img
       imageData lena_img `shouldBe` combineColors red green blue
+
+    it "Recombinando %error" $ do
+      -- lena_img@(Image width height _) <- loadImage lena_path
+      let alt = SV.fromList [4, 2, 3, 7, 10, 8, 10, 14]
+          res = evalState (secAnalitica alt >>= secSintetica) 8
+      norm_2 (res - alt) / norm_2 alt < 0.1 `shouldBe` True
+
+  -- describe "Pruebas en Lena"
+  --   it "Recombinacion Lena" $ do
+  --     lena_img <- loadImage lena_path
+  --     let red   = extractColor 0 lena_img
+  --         green = extractColor 1 lena_img
+  --         blue  = extractColor 2 lena_img
+  --         go color = evalState (secAnalitica color >>= secSintetica)
+  --                              (VS.length color)
+  --     imageData lena_img `shouldBe` combineColors red green blue
 
 {- Ejemplo libro pagina 126 -}
 ex_vec1 :: Vector (Complex Double)

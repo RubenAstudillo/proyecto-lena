@@ -47,20 +47,58 @@ combineColors red green blue = G.create stVec
 
          return mutvec
 
-downFourier :: forall a v. (G.Vector v a, Fractional a)
-            => v a -> Int -> v a
-downFourier vec dimN = G.create stVec
+downSampF :: forall a v. (G.Vector v a, Fractional a)
+          => v a -> Int -> v a
+downSampF vec dim_n = G.create stVec
   where
     -- Convencion Libro
-    dimM = dimN `div` 2
+    dim_m = dim_n `div` 2
 
     stVec :: forall s. ST s (G.Mutable v s a)
     stVec =
-      do mutvec <- GM.new dimM
-         F.forM_ [0..(dimM - 1)] $ \i ->
+      do mutvec <- GM.new dim_m
+         F.forM_ [0..(dim_m - 1)] $ \i ->
            GM.write mutvec i (go vec i)
          return mutvec
 
     -- Teorema de downsampling y transformada de Fourier
     go :: v a -> Int -> a
-    go z i = 0.5 * (z G.! i + z G.! (i + dimM))
+    go z i = 0.5 * (z G.! i + z G.! (i + dim_m))
+
+downSamp :: forall v a. (G.Vector v a) => v a -> Int ->  v a
+downSamp vec dim_n = G.create stVec
+  where
+    -- Convencion Libro
+    dim_m = dim_n `div` 2
+
+    stVec :: forall s. ST s (G.Mutable v s a)
+    stVec =
+      do mutvec <- GM.new dim_m
+         F.forM_ [0..(dim_m - 1)] $ \i ->
+           GM.write mutvec i (vec G.! (2 * i))
+         return mutvec
+
+
+-- upSampF :: forall a v. (G.Vector v a, Num a) => v a -> Int -> v a
+-- upSampF vec dim_m = G.create stVec
+--   where
+--     dim_n = 2 * dim_m
+
+--     stVec :: forall s. ST s (G.Mutable v s a)
+--     stVec =
+--       do mutvec <- GM.replicate dim_n 0
+--          F.forM_ [0,2..(dim_n - 1)] $
+--            \i -> GM.write mutvec i (vec G.! (i `div` 2))
+--          return mutvec
+
+upSampF :: forall a v. (G.Vector v a, Num a) => v a -> Int -> v a
+upSampF vec dim_m = G.create stVec
+  where
+    dim_n = 2 * dim_m
+
+    stVec :: forall s. ST s (G.Mutable v s a)
+    stVec =
+      do mutvec <- GM.replicate dim_n 0
+         F.forM_ [0,1..(dim_n - 1)] $
+           \i -> GM.write mutvec i (vec G.! (mod i dim_m))
+         return mutvec

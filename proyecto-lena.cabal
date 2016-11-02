@@ -13,8 +13,9 @@ maintainer:          ruben.astud@gmail.com
 -- category:            
 build-type:          Simple
 extra-source-files:  ChangeLog.md
---                      images/Lenna.png
--- data-files:          images/Lenna.png
+                     images/Lenna.png
+data-files:          images/Lenna.png
+                     images/tiny.png
 cabal-version:       >=1.10
 
 library
@@ -22,12 +23,14 @@ library
                        ArrayPoking,
                        Algoritmo,
                        Bases,
+                       Paths_proyecto_lena,
                        RealMain
-  -- other-modules:       
+  -- other-modules:
   -- other-extensions:    
   build-depends:       base >=4.9 && <4.10,
                        mtl,
                        hmatrix,
+                       hstatistics,
                        JuicyPixels,
                        vector-fftw,
                        vector
@@ -41,6 +44,8 @@ test-suite test-lena
   main-is:             test-lena.hs
   build-depends:       base,
                        hspec,
+                       mtl,
+                       hmatrix,
                        JuicyPixels,
                        vector,
                        proyecto-lena
